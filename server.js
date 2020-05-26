@@ -43,6 +43,12 @@ function filterByQuery(query, animalsArray) {
     return filteredResults;
 }
 
+// takes in ID and array of animals, returning single animal object
+function findById(id, animalsArray) {
+    const result = animalsArray.filter(animal => animal.id === id)[0];
+    return result;
+  }
+
 // get() - two arguments, a string describing the route to fetch from, and a callback function that executes
 // every time this route is acessed with the GET request;
 // send() - (using from RESponse parameter) to send string 'Hello!' to client,
@@ -50,14 +56,33 @@ function filterByQuery(query, animalsArray) {
 // call filterByQuery in app.get();
 app.get('/api/animals', (req, res) => {
     // accessing query property on the req object
-    let results = animals;
+    let result = animals;
     if (req.query) {
-        results = filterByQuery(req.query, results);
+        result = filterByQuery(req.query, results);
     }
-    res.json(results);
+    res.json(result);
+});
+
+// req.params object. param route must come AFTER the other get route
+// findById to return a single animal with unique ID
+// filterByQuery would filter all matching animals
+app.get('/api/animals/:id', (req, res) => {
+    const result = findById(req.params.id, animals);
+    if (result) {
+        res.json(result);
+      } else {
+        res.send(404);
+      }
 });
 
 // Listens for port number
 app.listen(PORT, () => {
     console.log(`API server now on port ${PORT}!`);
 });
+
+// ===================================================================
+// ==                           NOTES                               ==
+// == 'req.query' is multifaceted, often combining multiple         ==
+// == parameters, whereas 'req.param' is specific to a single       ==
+// == property, often intended to retrieve a single record.         ==
+// ===================================================================
