@@ -1,5 +1,7 @@
 const $animalForm = document.querySelector('#animal-form');
 
+//This function will gather all of the form input data and 
+//package it as an object to send to the getAnimals() function as the formData argument;
 const handleAnimalFormSubmit = event => {
   event.preventDefault();
 
@@ -25,6 +27,26 @@ const handleAnimalFormSubmit = event => {
     personalityTraits.push(selectedTraits[i].value);
   }
   const animalObject = { name, species, diet, personalityTraits };
+// specify request and method (POST), then data were sending, then provide that data;
+  fetch('/api/animals', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    // add stringified JSON data for our animalObject to the body property of the request
+    body: JSON.stringify(animalObject)
+  })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      alert('Error: ' + response.statusText);
+    })
+    .then(postResponse => {
+      console.log(postResponse);
+      alert('Thank you for adding an animal!');
+    });
 
 };
 

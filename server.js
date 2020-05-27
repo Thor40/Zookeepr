@@ -13,6 +13,8 @@ const path = require('path');
 app.use(express.urlencoded({ extended: true }));
 // parse incoming JSON data
 app.use(express.json());
+// middleware for front-end code
+app.use(express.static('public'));
 
 // take our new animal data from req.body and check if each key not only exists, but that it is also the right type of data;
 function validateAnimal(animal) {
@@ -143,6 +145,21 @@ app.post('/api/animals', (req, res) => {
     res.json(animal);
     }
 });
+
+// GET sending index.html file to display in browser
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+// GET sending animals.html file to display in browser
+app.get('/animals', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+// GET sending zookeepers.html file to display in browser
+app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+  });
 
 // Listens for port number
 app.listen(PORT, () => {

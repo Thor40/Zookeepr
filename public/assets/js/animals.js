@@ -30,7 +30,20 @@ const getAnimals = (formData = {}) => {
   });
 
   console.log(queryUrl);
-
+  fetch(queryUrl)
+  .then(response => {
+    //This is the part that will check for any HTTP status code the signifies an error
+    if (!response.ok) {
+      //if error, alert user something is wrong
+      return alert('Error: ' + response.statusText);
+    }
+    return response.json();
+  })
+  .then(animalData => {
+    console.log(animalData);
+    //send our array of animal data to the printResults()
+    printResults(animalData);
+  });
 };
 
 const handleGetAnimalsSubmit = event => {
