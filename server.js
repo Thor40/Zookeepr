@@ -4,6 +4,13 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 const fs = require('fs');
 const path = require('path');
+// require() statements will read the index.js files in each of the directories,
+// mechanism works the same way as directory navigation does in a website
+// If we navigate to a directory that doesn't have an index.html file, then the contents are displayed in a directory listing;
+// if there's an index.html file, then it is read and its HTML is displayed instead,
+// with require(), the index.js file will be the default file read if no other file is provided;
+const apiRoutes = require('./routes/apiRoutes');
+const htmlRoutes = require('./routes/htmlRoutes');
 
 // middleware = mounts function to server that requests will pass through
 // allow our route endpoint callback function more readable;
@@ -13,6 +20,10 @@ const path = require('path');
 app.use(express.urlencoded({ extended: true }));
 // parse incoming JSON data
 app.use(express.json());
+// any time a client navigates to <ourhost>/api, the app will use the router we set up in apiRoutes;
+app.use('/api', apiRoutes);
+// If / is the endpoint, then the router will serve back our HTML routes
+app.use('/', htmlRoutes);
 // middleware for front-end code
 app.use(express.static('public'));
 
@@ -20,47 +31,6 @@ app.use(express.static('public'));
 // every time this route is acessed with the GET request;
 // send() - (using from RESponse parameter) to send string 'Hello!' to client,
 // to send JSON, change send to json();
-// call filterByQuery in app.get();
-app.get('/api/animals', (req, res) => {
-    // accessing query property on the req object
-    let result = animals;
-    if (req.query) {
-        result = filterByQuery(req.query, result);
-    }
-    res.json(result);
-});
-
-// req.params object. param route must come AFTER the other get route
-// findById to return a single animal with unique ID
-// filterByQuery would filter all matching animals
-app.get('/api/animals/:id', (req, res) => {
-    const result = findById(req.params.id, animals);
-    if (result) {
-        res.json(result);
-      } else {
-        res.send(404);
-      }
-});
-
-// POST requests are a route to accept data to be used or stored server-side
-app.post('/api/animals', (req, res) => {
-    // set id based on what the next index of the array will be
-    // the length property is always going to be one number ahead of the last 
-    // index of the array so we can avoid any duplicate values;
-    // This method will only work as long as we don't remove any data from animals.json. 
-    // If we do, the id numbers will be thrown off and we'll end up with a duplicate value at some point
-    req.body.id = animals.length.toString();
-    // if nay data in req.body is incorrect, send 400 error back
-    if(!validateAnimal(req.body)) {
-        res.status(400).send('The animal is not properly formatted.')
-    } else {
-    // add animal to json file and animals array in this function
-    const animal = createNewAnimal(req.body, animals);
-    // req.body (animal) is where our incoming content will be
-    console.log(animal);
-    res.json(animal);
-    }
-});
 
 // GET sending index.html file to display in browser
 app.get('/', (req, res) => {
